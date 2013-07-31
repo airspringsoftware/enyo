@@ -47,6 +47,9 @@
 		this.modules = [];
 		// stylesheet paths
 		this.sheets = [];
+		// [AirSpring addition: loaded package files (keyed name: status)
+		//  status = (undefined if not loaded yet, false if load failed, true if load succeeded)]
+		this.completedLoads = {};
 		// (protected) internal dependency stack
 		this.stack = [];
 		this.pathResolver = inPathResolver || enyo.path;
@@ -57,10 +60,18 @@
 
 	enyo.loaderFactory.prototype  = {
 		verbose: false,
+		// [loadScript modified by AirSpring]
 		loadScript: function(inScript) {
-			this.machine.script(inScript);
-		},
-		loadSheet: function(inSheet) {
+			if(!this.completedLoads[inScript]) {
+				this.completedLoads[inScript] = false;
+				this.machine.script(inScript, "enyo.onscriptload('" + inScript + "')", "enyo.onscriptfail('" + inScript + "')");
+			}
+			else {
+				if(this.verbose) {
+					window.console.log("+ script [" + inScript + "] already loaded; skipping");
+				}
+			}
+		},		loadSheet: function(inSheet) {
 			this.machine.sheet(inSheet);
 		},
 		loadPackage: function(inPackage) {
@@ -297,6 +308,13 @@
 			// load the actual package. the package MUST call a continuation function
 			// or the process will halt.
 			this.loadPackage(this.manifest);
+		},
+		// [AirSpring addition: check package loading status]
+		getFileLoaded: function(filename) {
+			return this.completedLoads[filename];
+		},
+		setFileLoaded: function(filename, success) {
+			this.completedLoads[filename] = success;
 		}
 	};
 })();

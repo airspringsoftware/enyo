@@ -66,7 +66,20 @@ enyo.machine = {
 
 // create a dependency processor using our script machine
 enyo.loader = new enyo.loaderFactory(enyo.machine);
+//enyo.loader.verbose = true; //uncomment to make loader print info to stdout, but be advised it breaks node airspring.js
 
+//[added by AirSpring Software for internal purposes 07/22]
+//These callbacks are used by the loader to prevent loading the same file more than once
+enyo.onscriptload = function(scriptName) {
+	enyo.loader.setFileLoaded(scriptName,true);
+};
+
+enyo.onscriptfail = function(scriptName) {
+	if(typeof enyo.loader.getFileLoaded(scriptName) === 'undefined') {
+		enyo.loader.setFileLoaded(scriptName,false);
+	}
+};
+//[end of AirSpring addition]
 // dependency API uses enyo loader
 enyo.depends = function() {
 	var ldr = enyo.loader;
@@ -129,5 +142,10 @@ enyo.depends = function() {
 // predefined path aliases
 enyo.path.addPaths({
 	enyo: enyo.args.root,
-	lib: "$enyo/../lib"
+	lib: "$enyo/../lib",
+	apps: "$enyo/../apps",
+	servers: "$enyo/../servers",
+	airspring: "$lib/airspring",
+	components: "$airspring/components",
+	css: "$apps/css"
 });

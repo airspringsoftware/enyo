@@ -142,10 +142,5 @@ enyo.depends = function() {
 // predefined path aliases
 enyo.path.addPaths({
 	enyo: enyo.args.root,
-	lib: "$enyo/../lib",
-	apps: "$enyo/../apps",
-	servers: "$enyo/../servers",
-	airspring: "$lib/airspring",
-	components: "$airspring/components",
-	css: "$apps/css"
+	lib: "$enyo/../lib"
 });

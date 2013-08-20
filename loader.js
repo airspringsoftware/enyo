@@ -28,11 +28,16 @@
 				working = true;
 				return its(paths[name]) || '';
 			};
-			var result = inPath;
+			var result, sourcePath = inPath;
 			do {
 				working = false;
-				result = result.replace(this.rewritePattern, fn);
+				result = sourcePath.replace(this.rewritePattern, fn);
+				// RCG -- do not let replace write back to the source string
+				if(!result.match(sourcePath))//working)
+					sourcePath = result;
+
 			} while (working);
+
 			return result;
 		}
 	};
@@ -120,7 +125,7 @@
 		finish: function() {
 			this.packageFolder = "";
 			if (this.verbose) {
-				console.log("-------------- fini");
+				console.log("-------------- finish");
 			}
 			for (var i in this.finishCallbacks) {
 				if (this.finishCallbacks[i]) {

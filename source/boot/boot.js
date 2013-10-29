@@ -29,13 +29,13 @@ enyo.machine = {
 		if (enyo.runtimeLoading || isLess) {
 			link = document.createElement('link');
 			link.href = inPath;
-			link.media = "screen";
+			link.media = "all";
 			link.rel = rel;
 			link.type = type;
 			document.getElementsByTagName('head')[0].appendChild(link);
 		} else {
 			link = function() {
-				document.write('<link href="' + inPath + '" media="screen" rel="' + rel + '" type="' + type + '" />');
+				document.write('<link href="' + inPath + '" media="all" rel="' + rel + '" type="' + type + '" />');
 			};
 			enyo.execUnsafeLocalFunction(link);
 		}

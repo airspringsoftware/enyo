@@ -5,7 +5,7 @@ enyo.execUnsafeLocalFunction = function(e) {
 		e();
 	}
 	else {
-		window.MSApp.execUnsafeLocalFunction(e);
+		MSApp.execUnsafeLocalFunction(e);
 	}
 };
 
@@ -29,28 +29,26 @@ enyo.machine = {
 		if (enyo.runtimeLoading || isLess) {
 			link = document.createElement('link');
 			link.href = inPath;
-			link.media = "screen";
+			link.media = "all";
 			link.rel = rel;
 			link.type = type;
 			document.getElementsByTagName('head')[0].appendChild(link);
 		} else {
 			link = function() {
-				/* jshint evil: true */
-				document.write('<link href="' + inPath + '" media="screen" rel="' + rel + '" type="' + type + '" />');
+				document.write('<link href="' + inPath + '" media="all" rel="' + rel + '" type="' + type + '" />');
 			};
 			enyo.execUnsafeLocalFunction(link);
 		}
 		if (isLess && window.less) {
-			window.less.sheets.push(link);
+			less.sheets.push(link);
 			if (!enyo.loader.finishCallbacks.lessRefresh) {
 				enyo.loader.finishCallbacks.lessRefresh = function() {
-					window.less.refresh(true);
+					less.refresh(true);
 				};
 			}
 		}
 	},
 	script: function(inSrc, onLoad, onError) {
-		/* jshint evil: true */
 		if (!enyo.runtimeLoading) {
 			document.write('<scri' + 'pt src="' + inSrc + '"' + (onLoad ? ' onload="' + onLoad + '"' : '') + (onError ? ' onerror="' + onError + '"' : '') + '></scri' + 'pt>');
 		} else {
@@ -62,14 +60,26 @@ enyo.machine = {
 		}
 	},
 	inject: function(inCode) {
-		/* jshint evil: true */
 		document.write('<scri' + 'pt type="text/javascript">' + inCode + "</scri" + "pt>");
 	}
 };
 
 // create a dependency processor using our script machine
 enyo.loader = new enyo.loaderFactory(enyo.machine);
+//enyo.loader.verbose = true; //uncomment to make loader print info to stdout, but be advised it breaks node airspring.js
 
+//[added by AirSpring Software for internal purposes 07/22]
+//These callbacks are used by the loader to prevent loading the same file more than once
+enyo.onscriptload = function(scriptName) {
+	enyo.loader.setFileLoaded(scriptName,true);
+};
+
+enyo.onscriptfail = function(scriptName) {
+	if(typeof enyo.loader.getFileLoaded(scriptName) === 'undefined') {
+		enyo.loader.setFileLoaded(scriptName,false);
+	}
+};
+//[end of AirSpring addition]
 // dependency API uses enyo loader
 enyo.depends = function() {
 	var ldr = enyo.loader;
@@ -108,14 +118,14 @@ enyo.depends = function() {
 			var depends = args[0];
 			var dependsArg = enyo.isArray(depends) ? depends : [depends];
 			var onLoadCallback = args[1];
-			enyo.loader.finishCallbacks.runtimeLoader = function(inBlock) {
+			enyo.loader.finishCallbacks.runtimeLoader = function() {
 				// Once loader is done loading a package, we chain a call to runtimeLoad(),
 				// which will call the onLoadCallback from the original load call, passing
 				// a reference to the depends argument from the original call for tracking,
 				// followed by kicking off any additionally queued load() calls
 				runtimeLoad(function() {
 					if (onLoadCallback) {
-						onLoadCallback(inBlock);
+						onLoadCallback(depends);
 					}
 				});
 			};

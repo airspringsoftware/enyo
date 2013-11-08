@@ -45,6 +45,7 @@ enyo.kind({
 		onRequestHide: "requestHide"
 	},
 	captureEvents: true,
+	_hasCaptured: false,
 	//* @public
 	events: {
 		//* Fires after the popup is shown.
@@ -178,10 +179,12 @@ enyo.kind({
 			this.resized();
 			if (this.captureEvents) {
 				this.capture();
+				this._hasCaptured = true;
 			}
 		} else {
-			if (this.captureEvents) {
+			if (this.captureEvents && this._hasCaptured) {
 				this.release();
+				this._hasCaptured = false;
 			}
 		}
 		// show after sizing

@@ -179,12 +179,10 @@ enyo.kind({
 			this.resized();
 			if (this.captureEvents) {
 				this.capture();
-				this._hasCaptured = true;
 			}
 		} else {
-			if (this.captureEvents && this._hasCaptured) {
+			if (this.captureEvents) {
 				this.release();
-				this._hasCaptured = false;
 			}
 		}
 		// show after sizing
@@ -197,10 +195,14 @@ enyo.kind({
 		}
 	},
 	capture: function() {
+		this._hasCaptured = true;
 		enyo.dispatcher.capture(this, !this.modal);
 	},
 	release: function() {
-		enyo.dispatcher.release();
+		if(this._hasCaptured) {
+			enyo.dispatcher.release();
+			this._hasCaptured = false;
+		}
 	},
 	down: function(inSender, inEvent) {
 		//record the down event to verify in tap

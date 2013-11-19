@@ -110,7 +110,10 @@
 				// block.packageName is the name of the package that interrupted us
 				//this.report("finished package", block.packageName);
 				if (this.verbose) {
-					console.groupEnd("* finish package (" + (block.packageName || "anon") + ")");
+					if(console.groupEnd)
+						console.groupEnd("* finish package (" + (block.packageName || "anon") + ")");
+					else
+						console.log("* finish package (" + (block.packageName || "anon") + ")");
 				}
 				// cache the folder for the currently processing package
 				this.packageFolder = block.folder;
@@ -308,7 +311,10 @@
 			// console/user reporting
 			this.report("loading package", this.packageName);
 			if (this.verbose) {
-				console.group("* start package [" + this.packageName + "]");
+				if(console.group)
+					console.group("* start package [" + this.packageName + "]");
+				else
+					console.log("* start package [" + this.packageName + "]");
 			}
 			// load the actual package. the package MUST call a continuation function
 			// or the process will halt.

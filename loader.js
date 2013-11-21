@@ -38,11 +38,12 @@
 				working = false;
 				for (var i=0; i<this.pathNames.length; i++) {
 					var regex = new RegExp("\\$(" + this.pathNames[i] + ")(\\/)?", "g");
-					sourcePath = result.replace(regex, fn);
+					result = sourcePath.replace(regex, fn);
+					sourcePath = result;
 				}
 			} while (working);
 
-			return result;
+			return sourcePath;
 		}
 	};
 
@@ -184,7 +185,7 @@
 					window.console.log("+ stylesheet: [" + prefix + "][" + inPath + "]");
 				}
 				this.requireStylesheet(path);
-			} else if (path.slice(-3).toLowerCase() == ".js" && path.slice(-10).toLowerCase() != "package.js") {
+			} else if (path.slice(-3).toLowerCase() == ".js" && !(/[\W]package.js/.test(path.slice(-11).toLowerCase()))) { //TODO(MG): check this
 				if (this.verbose) {
 					window.console.log("+ module: [" + prefix + "][" + inPath + "]");
 				}

@@ -266,6 +266,7 @@ enyo.kind({
 		}
 	},
 	shouldDrag: function(inSender, e) {
+		this.calcStartInfo();
 		this.calcAutoScrolling();
 		var requestV = e.vertical;
 		var canH = this.$.scrollMath.horizontal && !requestV;

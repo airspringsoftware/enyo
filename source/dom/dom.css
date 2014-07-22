@@ -52,7 +52,7 @@ button::-moz-focus-inner {
 	user-select: none;
 }
 
-.enyo-unselectable::selection, .enyo-unselectable ::selection {
+.enyo-unselectable::selection, .enyo-unselectable div::selection {
 	color: transparent;
 }
 

@@ -81,6 +81,28 @@ enyo.onscriptfail = function(scriptName) {
 //[end of AirSpring addition]
 // dependency API uses enyo loader
 enyo.depends = function() {
+	var filesToProcess = arguments;
+	var counter = 0;
+	var increment = 0;
+	var exclude = false;
+
+	while(filesToProcess[counter+increment]) {
+		if(filesToProcess[counter]==='EXCLUDE_PROD' && window.currentServer === "production") {
+			exclude = true;
+		}
+		else if(filesToProcess[counter]==='EXCLUDE_PROD' && window.currentServer !== "production") {
+			increment=1;
+		}
+		if(exclude) {
+			delete filesToProcess[counter];
+		}
+		else {
+			filesToProcess[counter] = filesToProcess[counter+increment];
+		}
+		counter++;
+	}
+	if(!filesToProcess[counter+increment])
+		delete filesToProcess[counter];
 	var ldr = enyo.loader;
 	if (!ldr.packageFolder) {
 		var tag = enyo.locateScript("package.js");
@@ -90,7 +112,7 @@ enyo.depends = function() {
 			//console.log("detected PACKAGEFOLDER [" + ldr.packageFolder + "]");
 		}
 	}
-	ldr.load.apply(ldr, arguments);
+	ldr.load.apply(ldr, filesToProcess);
 };
 
 // Runtime loader

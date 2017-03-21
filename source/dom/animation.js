@@ -1,8 +1,9 @@
 (function() {
 	var ms = Math.round(1000/60);
-	var prefix = ["webkit", "moz", "ms", "o", ""];
+	var prefix = ["", "webkit", "moz", "ms", "o"];
 	var r = "requestAnimationFrame";
-	var c = "cancel" + enyo.cap(r);
+	var c = "cancelAnimationFrame";
+	var cR = "cancelRequestAnimationFrame";
 	// fallback on setTimeout and clearTimeout
 	var _requestFrame = function(inCallback) {
 		return window.setTimeout(inCallback, ms);
@@ -10,7 +11,7 @@
 	var _cancelFrame = function(inId) {
 		return window.clearTimeout(inId);
 	};
-	for (var i = 0, pl = prefix.length, p, wc, wr; (p = prefix[i]) || i < pl; i++) {
+	for (var i = 0, pl = prefix.length, p, wc, wr, wcr; (p = prefix[i]) || i < pl; i++) {
 		// if we're on ios 6 just use setTimeout, requestAnimationFrame has some kinks currently
 		if (enyo.platform.ios >= 6) {
 			break;
@@ -19,9 +20,10 @@
 		// if prefixed, becomes Request and Cancel
 		wc = p ? (p + enyo.cap(c)) : c;
 		wr = p ? (p + enyo.cap(r)) : r;
+		wcr = p ? (p + enyo.cap(cR)) : cR;
 		// Test for cancelRequestAnimationFrame, because some browsers (Firefix 4-10) have a request without a cancel
-		if (window[wc]) {
-			_cancelFrame = window[wc];
+		if (window[wc] || window[wcr]) {
+			_cancelFrame = window[wc] || window[wcr];
 			_requestFrame = window[wr];
 			if (p == "webkit") {
 				/*
